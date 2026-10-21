@@ -23,7 +23,11 @@ your app.
 # Gemfile
 gem "pay"
 gem "pay-square"
+gem "square.rb", "~> 44" # the Square SDK — your app declares it, as Pay expects for stripe/braintree
 ```
+
+`pay-square` does not depend on `square.rb` directly; like Pay's built-in processors, it expects
+the host app to provide the SDK gem. If `square.rb` is absent the processor simply stays disabled.
 
 Then copy and run the migration that adds `square_account` to Pay's tables:
 

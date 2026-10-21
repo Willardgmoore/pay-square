@@ -2,6 +2,10 @@ source "https://rubygems.org"
 
 gemspec
 
+# The Square SDK is an app-provided dependency (see the gemspec), so this gem does not declare it.
+# Declare it here for the dummy app and test suite, exactly as a host app would in its own Gemfile.
+gem "square.rb", "~> 44"
+
 # Test/dev
 gem "sqlite3"
 gem "webmock"

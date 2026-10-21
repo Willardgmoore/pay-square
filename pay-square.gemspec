@@ -30,5 +30,9 @@ Gem::Specification.new do |spec|
   # Verified against Pay 11.7.2 and 12.3.0. Pay 13 removes methods deprecated in 12 and is
   # not yet tested, so it is excluded until confirmed.
   spec.add_dependency "pay", ">= 11.0", "< 13"
-  spec.add_dependency "square.rb", "~> 44"
+
+  # The Square SDK (square.rb) is intentionally NOT a hard dependency. Following Pay's own
+  # convention for Stripe/Braintree/Paddle, the host app declares `gem "square.rb"`; this gem
+  # references it only at runtime and gates on `defined?(::Square)` plus a version check (see
+  # Pay::Square.enabled? and REQUIRED_VERSION). The supported line is square.rb ~> 44.
 end

@@ -1,5 +1,9 @@
 require "pay"
-require "square"
+
+# The Square SDK (square.rb) is provided by the host app, matching how Pay loads Stripe and the
+# other processor SDKs (Pay never requires an SDK itself). Bundler auto-requires the app's
+# `gem "square.rb"`; Pay::Square.enabled? gates on defined?(::Square), so a missing SDK disables
+# the processor instead of raising at load time.
 
 require "pay/square/version"
 require "pay/square/engine"
