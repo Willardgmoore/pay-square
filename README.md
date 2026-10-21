@@ -11,6 +11,12 @@ Scope: card payments, card-on-file, refunds, and payment/refund/card/customer we
 Square OAuth, token refresh, payouts/reconciliation, catalog, and the checkout UI stay in
 your app.
 
+## Requirements
+
+- Ruby >= 3.1.0
+- [Pay](https://github.com/pay-rails/pay) 11.x or 12.x (verified against 11.7.2 and 12.3.0)
+- [square.rb](https://github.com/square/square-ruby-sdk) ~> 44
+
 ## Installation
 
 ```ruby

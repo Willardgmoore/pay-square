@@ -4,11 +4,11 @@ ENV["SQUARE_ENVIRONMENT"] ||= "sandbox"
 ENV["SQUARE_SIGNING_SECRET"] ||= "test_square_signing_secret"
 ENV["SQUARE_WEBHOOK_NOTIFICATION_URL"] ||= "https://example.com/pay/webhooks/square"
 
+require File.expand_path("dummy/config/environment.rb", __dir__)
 require "pay"
 require "square"
 require "pay/square"
 
-require File.expand_path("dummy/config/environment.rb", __dir__)
 ActiveRecord::Migrator.migrations_paths = [
   File.expand_path("dummy/db/migrate", __dir__),
   File.expand_path("../db/migrate", __dir__)
