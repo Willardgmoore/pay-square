@@ -8,29 +8,34 @@
 
 A **[Square](https://squareup.com/)** payment processor for **[Pay — the payments engine for Ruby on Rails](https://github.com/pay-rails/pay)**.
 
-## 🏦 A Pay processor, shipped as its own gem
+## 🏦 Extending Pay — and why Square is its own gem
 
 [Pay](https://github.com/pay-rails/pay) already speaks Stripe, Braintree, Paddle, and Lemon Squeezy.
-`pay-square` extends it with **Square** — registered from the outside, as its own gem, with no fork of
-Pay. The whole point is to grow what Pay can do without bloating its core.
+`pay-square` adds **Square** from the outside — its own gem, no fork of Pay — the same self-registering
+plugin pattern as [`pay-asaas`](https://github.com/PedroAugustoRamalhoDuarte/pay-asaas).
 
-This follows a convention Pay's maintainer, Chris Oliver, endorsed when Square was first proposed for
-Pay core:
+Pay's maintainer, Chris Oliver, both welcomed this and is taking the same direction for Pay's own
+processors:
 
-> You're welcome to extract this to a Rubygem that integrates with Pay. 👍
+> I'm planning to extract Braintree and Paddle from the main gem. It doesn't bloat anything having them
+> in the gem since they're lazy loaded, but easier to maintain. […] long-term we can add it to the pay
+> org if you would like to keep maintaining it.
 >
-> — [Chris Oliver, pay-rails/pay#1251](https://github.com/pay-rails/pay/pull/1251)
+> — [Chris Oliver, pay-rails/pay#1251](https://github.com/pay-rails/pay/pull/1251#issuecomment-5545503069)
 
-Braintree and Paddle are slated to move to their own gems too. It's the same outside-plugin pattern as
-[`pay-asaas`](https://github.com/PedroAugustoRamalhoDuarte/pay-asaas): a Rails engine that
-self-registers its processor, webhooks, and models into Pay.
+### Not just a processor — a marketplace integration
 
-### What's Square-specific
+Braintree and Paddle are being split out for maintainability alone. Square is a different case: here it
+is used for **[marketplace payments](https://github.com/pay-rails/pay/tree/main/docs/marketplaces)** —
+Pay's term for charging on a connected merchant's **own account** and taking an **application fee** —
+not merely to charge your own customers.
 
-Unlike Stripe Connect (one platform key + a `stripe_account` header), Square issues a **distinct OAuth
-access token per merchant**. So this processor charges on a merchant's **own connected Square account**
-(you are not the merchant of record) and builds a `Square::Client` per operation from a token you
-supply via a resolver.
+Square also issues a **distinct OAuth access token per merchant** (unlike Stripe Connect's single
+platform key plus a `stripe_account` header). So `pay-square` charges on a merchant's **own connected
+Square account** (the merchant, not you, is the merchant of record), building a `Square::Client` per
+operation from a token you supply via `Pay::Square.access_token_provider`, and isolates customers per
+merchant with a `square_account` column. That on-behalf-of, per-merchant model — not plain processing —
+is a core reason Square belongs in its own gem.
 
 Scope: card payments, card-on-file, refunds, and payment/refund/card/customer webhooks. Square OAuth,
 token refresh, payouts/reconciliation, catalog, and the checkout UI stay in your app.
