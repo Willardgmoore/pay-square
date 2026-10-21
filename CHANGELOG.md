@@ -13,6 +13,9 @@
   every push to main, pinned Ruby 2.6, and also pushed to GitHub Packages).
 * README: added gem version / Ruby / license badges and a Links section; vendored the RubyGems
   logos under `assets/rubygems/`.
+* README reorganized to follow Pay's conventions: Pay logo + tagline, badges on one line, a blockquote
+  for the upstream endorsement, and a `📚 Docs` section linking to dedicated pages under `docs/`
+  (installation, configuration, usage, webhooks).
 * gemspec now sets `rubygems_mfa_required`, and drops the duplicate `homepage_uri` metadata.
 
 ## 0.1.0.rc1 - 2026-10-21
