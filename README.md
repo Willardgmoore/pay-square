@@ -23,45 +23,31 @@ your app.
 
 ## Installation
 
-Add Pay, this gem, and the Square SDK to your app's Gemfile:
+Add Pay, this gem, and the Square SDK to your Gemfile. The default is patch releases only, with
+the compatible Pay and Square lines right there:
 
 ```ruby
 # Gemfile
-gem "pay"
-gem "pay-square"
-gem "square.rb", "~> 44" # the Square SDK — your app declares it, as Pay expects for stripe/braintree
+gem "pay", ">= 11.0", "< 13" # Pay 11.x or 12.x
+gem "pay-square", "~> 0.1.0" # patch releases of the 0.1 line
+gem "square.rb", "~> 44"     # the Square SDK — your app provides it
 ```
 
 `pay-square` does not depend on `square.rb` directly; like Pay's built-in processors, it expects
-the host app to provide the SDK gem. If `square.rb` is absent the processor simply stays disabled.
-
-`gem "pay-square"` tracks the latest **stable** release. To lock to a known version instead:
-
-```ruby
-gem "pay-square", "0.1.0"    # exactly this version
-gem "pay-square", "~> 0.1.0" # 0.1.x patch releases only (recommended while below 1.0)
-```
+your app to provide the SDK gem. If `square.rb` is absent, the processor simply stays disabled.
 
 ### Living on the edge (pre-releases)
 
-Release candidates ship as pre-release versions (for example `0.1.0.rc1`). Bundler and
-`gem install` skip pre-releases by default, so you have to opt in explicitly. Handy when you
-want to test a fix or a new Pay/SDK-compatibility release before it goes stable:
+Release candidates ship as pre-releases (e.g. `0.1.0.rc1`). To follow the newest pre-release of the
+`0.1` line automatically — without pinning to a specific one — add `.pre` to the constraint:
 
 ```ruby
-# Pin a specific pre-release
-gem "pay-square", "0.1.0.rc1"
-
-# Or track the newest code straight from source (always the latest pre-release work)
-gem "pay-square", github: "Willardgmoore/pay-square", branch: "main"
-
-# Or pin a pushed pre-release tag for a reproducible build
-gem "pay-square", github: "Willardgmoore/pay-square", tag: "v0.1.0.rc1"
+gem "pay-square", "~> 0.1.0.pre" # newest 0.1.x, pre-releases included
 ```
 
-Then `bundle update pay-square` pulls the newest matching version (or latest `main` commit).
-From the command line, `gem install pay-square --pre` grabs the newest pre-release. See
-[RELEASING.md](RELEASING.md) for how versions and tags are managed.
+A plain `~> 0.1.0` never installs a pre-release; this opts in and still stays on the `0.1` line.
+`bundle update pay-square` then moves you to the newest version it allows. See
+[RELEASING.md](RELEASING.md) for how versions are managed.
 
 Then copy and run the migration that adds `square_account` to Pay's tables:
 
