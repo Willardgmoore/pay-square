@@ -2,11 +2,14 @@
 # tag (e.g. v0.1.0 or v0.1.0.rc1) is pushed. No API key or secret is stored anywhere: GitHub
 # exchanges a short-lived OIDC token for a short-lived RubyGems token at release time.
 #
+# The publish job runs ONLY after the test job passes on the tagged commit, so a tag can never
+# ship a red build. Tags are cut from main after main's CI is green (see RELEASING.md).
+#
 # One-time setup on RubyGems.org (see RELEASING.md): register a trusted publisher for this gem
-#   gem name:  pay-square
-#   owner:     Willardgmoore
+#   gem name:   pay-square
+#   owner:      Willardgmoore
 #   repository: pay-square
-#   workflow:  release.yml   (this file's name)
+#   workflow:   release.yml   (this file's name)
 # For a gem not yet published, create it as a "pending" trusted publisher from your RubyGems
 # profile; the first successful push promotes it and makes you the gem owner.
 name: Release
@@ -17,8 +20,28 @@ on:
       - "v*"
 
 jobs:
+  test:
+    name: Test before release (Ruby ${{ matrix.ruby }}, Pay ${{ matrix.pay }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        ruby: ["3.1", "3.4"]
+        pay: ["11", "12"]
+    env:
+      PAY_VERSION: ${{ matrix.pay }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: false
+      - run: bundle install --jobs 4
+      - run: bundle exec rake test
+
   push:
     name: Push gem to RubyGems.org
+    needs: test
     runs-on: ubuntu-latest
 
     permissions:

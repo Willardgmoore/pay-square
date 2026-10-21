@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+* Added CI (`.github/workflows/ci.yml`): runs the test suite on every pull request and push to
+  `main`, across Ruby 3.1–3.4 and Pay 11 + 12, behind a single `All tests passed` check.
+* The release workflow now runs the tests first and only publishes to RubyGems if they pass.
+* `Gemfile` honors `PAY_VERSION` so CI can pin the Pay major under test.
+
 * Added trusted-publishing release workflow (`.github/workflows/release.yml`): a `v*` tag push
   publishes to RubyGems via OpenID Connect, no stored API key. See `RELEASING.md`.
 * Removed the generated `gem-push.yml` starter workflow in favor of `release.yml` (it published on

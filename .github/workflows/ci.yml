@@ -1,0 +1,45 @@
+# Runs the test suite on every pull request to main and on every push to main, across the Ruby
+# versions we support and both Pay lines the gemspec allows. The `all-tests` job is the single
+# status check to require in branch protection, so the matrix size can change without reconfiguring.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test (Ruby ${{ matrix.ruby }}, Pay ${{ matrix.pay }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.1", "3.2", "3.3", "3.4"]
+        pay: ["11", "12"]
+    env:
+      PAY_VERSION: ${{ matrix.pay }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: false
+      - run: bundle install --jobs 4
+      - run: bundle exec rake test
+
+  all-tests:
+    name: All tests passed
+    needs: test
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Verify the test matrix succeeded
+        run: |
+          if [ "${{ needs.test.result }}" != "success" ]; then
+            echo "One or more test matrix jobs failed."
+            exit 1
+          fi
+          echo "All test matrix jobs passed."

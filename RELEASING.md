@@ -120,6 +120,17 @@ After that, releasing is just pushing a tag (see the checklist). The gemspec set
 `metadata["rubygems_mfa_required"] = "true"`; trusted-publishing pushes satisfy that,
 so CI keeps working without a stored key.
 
+**Nothing publishes on a red build.** Two gates stand in front of RubyGems:
+
+1. `ci.yml` runs the test suite on every pull request and push to `main` (Ruby 3.1–3.4,
+   Pay 11 + 12). `main` is branch-protected so a PR cannot merge unless the single
+   `All tests passed` check is green, and `main` runs CI again after the merge.
+2. `release.yml` re-runs the tests on the tagged commit and publishes **only if they
+   pass**. A tag never ships a red build.
+
+So the path is: PR → CI green → merge to `main` → CI green on `main` → cut the tag from
+that green commit → release workflow re-tests and publishes.
+
 ## Release checklist
 
 1. Decide the bump: MAJOR / MINOR / PATCH, or a `.rcN` pre-release if the commit is
