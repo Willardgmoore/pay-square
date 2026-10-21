@@ -102,7 +102,7 @@ the commit, release it as a `.rcN` pre-release, not a final version.**
 
 We publish through **trusted publishing**: RubyGems authenticates the release via
 GitHub's OpenID Connect token, so there is **no API key or secret stored anywhere**.
-The release runs in GitHub Actions (`.github/workflows/release.yml`), triggered by
+The release runs in GitHub Actions (`.github/workflows/publish_gem.yml`), triggered by
 pushing a version tag.
 
 One-time setup on RubyGems.org (done by a gem owner, in the web UI — not something an
@@ -112,7 +112,7 @@ agent or CI can do):
 2. Register a trusted publisher for this gem. Because the gem is not published yet,
    add it as a **pending** trusted publisher from your profile's pending-publisher
    page, with: gem name `pay-square`, owner `Willardgmoore`, repository `pay-square`,
-   workflow `release.yml`. The first successful push promotes it and makes you the
+   workflow `publish_gem.yml`. The first successful push promotes it and makes you the
    gem's owner. (We do not set a GitHub environment; if you add one on RubyGems, also
    add `environment:` to the workflow job.)
 
@@ -125,7 +125,7 @@ so CI keeps working without a stored key.
 1. `ci.yml` runs the test suite on every pull request and push to `main` (Ruby 3.1–3.4,
    Pay 11 + 12). `main` is branch-protected so a PR cannot merge unless the single
    `All tests passed` check is green, and `main` runs CI again after the merge.
-2. `release.yml` re-runs the tests on the tagged commit and publishes **only if they
+2. `publish_gem.yml` re-runs the tests on the tagged commit and publishes **only if they
    pass**. A tag never ships a red build.
 
 So the path is: PR → CI green → merge to `main` → CI green on `main` → cut the tag from
@@ -147,7 +147,7 @@ that green commit → release workflow re-tests and publishes.
    git tag -a vX.Y.Z -m "…compatibility / notable changes…"
    git push origin vX.Y.Z
    ```
-   The `release.yml` workflow then runs `bundle exec rake release` (via
+   The `publish_gem.yml` workflow then runs `bundle exec rake release` (via
    `rubygems/release-gem`) and publishes the `.gem` to RubyGems. Watch the Actions run;
    it awaits propagation and fails loudly if the push is rejected.
 

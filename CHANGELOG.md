@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+* Adopted Pay's `.github` conventions: a `Standardrb` lint job in CI, a reusable `ci.yml`
+  (`workflow_call`) that the publish workflow runs before releasing, per-job timeouts, and
+  `actions/checkout@v6`. Renamed `release.yml` to `publish_gem.yml`.
+* Added `.standard.yml` (ignoring the generated dummy app), `dependabot.yml` (bundler + GitHub
+  Actions, monthly), a pull request template, and bug/feature issue templates.
+
 * Added CI (`.github/workflows/ci.yml`): runs the test suite on every pull request and push to
   `main`, across Ruby 3.1–3.4 and Pay 11 + 12, behind a single `All tests passed` check.
 * The release workflow now runs the tests first and only publishes to RubyGems if they pass.
