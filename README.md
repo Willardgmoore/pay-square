@@ -88,6 +88,13 @@ against `SQUARE_SIGNING_SECRET`. Handled events: `payment.*`, `refund.*`, `card.
 `customer.*`. Handlers re-fetch authoritative state from the API rather than trusting the
 payload, so out-of-order/duplicate deliveries are safe.
 
+## Versioning and releases
+
+This gem follows [Semantic Versioning](https://semver.org). Maintainers: see
+[RELEASING.md](RELEASING.md) for how we version, tag, and cut releases — including
+when to use a pre-release (`0.1.0.rc1`) and the rule that a pushed tag is immutable
+(fix forward with a new version, never move a published tag).
+
 ## License
 
 MIT.
