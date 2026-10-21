@@ -4,6 +4,8 @@
 
 * Added trusted-publishing release workflow (`.github/workflows/release.yml`): a `v*` tag push
   publishes to RubyGems via OpenID Connect, no stored API key. See `RELEASING.md`.
+* Removed the generated `gem-push.yml` starter workflow in favor of `release.yml` (it published on
+  every push to main, pinned Ruby 2.6, and also pushed to GitHub Packages).
 * gemspec now sets `rubygems_mfa_required`, and drops the duplicate `homepage_uri` metadata.
 
 ## 0.1.0.rc1 - 2026-10-21
