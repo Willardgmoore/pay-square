@@ -34,4 +34,22 @@ class Pay::Square::ChargeTest < Pay::Square::TestCase
     assert_raises(Pay::Square::Error) { @charge.refund!(50_00) }
     assert_equal 0, @charge.reload.amount_refunded.to_i
   end
+
+  # Pay 12 removed the processor_id uniqueness validations, so a concurrent insert now
+  # surfaces as ActiveRecord::RecordNotUnique (from the DB unique index) rather than
+  # RecordInvalid. sync must rescue it, retry, and update the row the other process inserted.
+  test "sync retries on RecordNotUnique from a concurrent insert and updates the existing charge" do
+    @charge.destroy
+    stub_square(:get, "payments/pmt_test", response: {payment: square_payment_json})
+
+    # Simulate the competing process: the first lookup misses, create! hits the unique index,
+    # and by the retry the row exists so sync takes the update path.
+    concurrent = @pay_customer.charges.create!(processor_id: "pmt_test", amount: 10_00, currency: "usd", square_account: "MERCHANT_1")
+    Pay::Square::Charge.stubs(:find_by).returns(nil).then.returns(concurrent)
+    Pay::Square::Charge.stubs(:create!).raises(ActiveRecord::RecordNotUnique.new("duplicate key"))
+
+    charge = Pay::Square::Charge.sync("pmt_test", pay_customer: @pay_customer)
+    assert_equal concurrent.id, charge.id
+    assert_equal 1_00, charge.reload.application_fee_amount
+  end
 end
