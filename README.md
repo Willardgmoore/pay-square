@@ -1,5 +1,9 @@
 # Pay::Square
 
+[![Gem Version](https://img.shields.io/gem/v/pay-square?logo=rubygems&logoColor=white)](https://rubygems.org/gems/pay-square)
+[![Ruby](https://img.shields.io/badge/ruby-%3E%3D%203.1-CC342D?logo=ruby&logoColor=white)](pay-square.gemspec)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](MIT-LICENSE)
+
 A [Square](https://squareup.com/) payment processor for the [Pay](https://github.com/pay-rails/pay) gem.
 
 Unlike Stripe Connect (one platform key + a `stripe_account` header), Square issues a
@@ -124,6 +128,16 @@ This gem follows [Semantic Versioning](https://semver.org). Maintainers: see
 [RELEASING.md](RELEASING.md) for how we version, tag, and cut releases — including
 when to use a pre-release (`0.1.0.rc1`) and the rule that a pushed tag is immutable
 (fix forward with a new version, never move a published tag).
+
+## Links
+
+[<img src="assets/rubygems/rubygems_logo_red.png" alt="RubyGems" height="28" align="left">](https://rubygems.org/gems/pay-square)
+
+- [pay-square on RubyGems](https://rubygems.org/gems/pay-square)
+- [Changelog](CHANGELOG.md) · [Releasing](RELEASING.md) · [Contributing](CONTRIBUTING.md)
+
+RubyGems logos in `assets/rubygems/` are trademarks of RubyGems and are used to link to the
+RubyGems ecosystem, not to imply endorsement.
 
 ## License
 
