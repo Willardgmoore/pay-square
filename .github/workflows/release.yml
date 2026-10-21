@@ -1,0 +1,37 @@
+# Publishes pay-square to RubyGems.org via trusted publishing (OpenID Connect) when a version
+# tag (e.g. v0.1.0 or v0.1.0.rc1) is pushed. No API key or secret is stored anywhere: GitHub
+# exchanges a short-lived OIDC token for a short-lived RubyGems token at release time.
+#
+# One-time setup on RubyGems.org (see RELEASING.md): register a trusted publisher for this gem
+#   gem name:  pay-square
+#   owner:     Willardgmoore
+#   repository: pay-square
+#   workflow:  release.yml   (this file's name)
+# For a gem not yet published, create it as a "pending" trusted publisher from your RubyGems
+# profile; the first successful push promotes it and makes you the gem owner.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  push:
+    name: Push gem to RubyGems.org
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write # mandatory: trusted publishing exchanges this for a RubyGems token
+      contents: write # required so `rake release` can push the release tag
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: ruby
+      - uses: rubygems/release-gem@v1

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+* Added trusted-publishing release workflow (`.github/workflows/release.yml`): a `v*` tag push
+  publishes to RubyGems via OpenID Connect, no stored API key. See `RELEASING.md`.
+* gemspec now sets `rubygems_mfa_required`, and drops the duplicate `homepage_uri` metadata.
+
 ## 0.1.0.rc1 - 2026-10-21
 
 First pre-release, cut for verification in a real consuming app before `0.1.0` is tagged

@@ -98,6 +98,28 @@ the commit, release it as a `.rcN` pre-release, not a final version.**
   at least one MINOR release before removing it in a MAJOR (post-1.0), per the
   SemVer FAQ.
 
+## Publishing to RubyGems (trusted publishing)
+
+We publish through **trusted publishing**: RubyGems authenticates the release via
+GitHub's OpenID Connect token, so there is **no API key or secret stored anywhere**.
+The release runs in GitHub Actions (`.github/workflows/release.yml`), triggered by
+pushing a version tag.
+
+One-time setup on RubyGems.org (done by a gem owner, in the web UI — not something an
+agent or CI can do):
+
+1. Create / sign in to a RubyGems.org account and enable multi-factor authentication.
+2. Register a trusted publisher for this gem. Because the gem is not published yet,
+   add it as a **pending** trusted publisher from your profile's pending-publisher
+   page, with: gem name `pay-square`, owner `Willardgmoore`, repository `pay-square`,
+   workflow `release.yml`. The first successful push promotes it and makes you the
+   gem's owner. (We do not set a GitHub environment; if you add one on RubyGems, also
+   add `environment:` to the workflow job.)
+
+After that, releasing is just pushing a tag (see the checklist). The gemspec sets
+`metadata["rubygems_mfa_required"] = "true"`; trusted-publishing pushes satisfy that,
+so CI keeps working without a stored key.
+
 ## Release checklist
 
 1. Decide the bump: MAJOR / MINOR / PATCH, or a `.rcN` pre-release if the commit is
@@ -107,15 +129,18 @@ the commit, release it as a `.rcN` pre-release, not a final version.**
    compatibility and any breaking changes.
 4. Run the suite green: `bundle exec rake test` (against the Pay versions the
    gemspec allows).
-5. Commit, and land the release commit on `main` first.
-6. Release **from `main`** so the tag points at a commit that lives on `main`:
-   - If publishing to RubyGems: `bundle exec rake release` (provided by
-     `bundler/gem_tasks`, already required in the `Rakefile`). It creates the
-     annotated `vX.Y.Z` tag, pushes the commit and tag, and publishes the `.gem`
-     in one step.
-   - If consumers use a git source instead of RubyGems: create and push the
-     annotated tag by hand — `git tag -a vX.Y.Z -m "…" && git push origin vX.Y.Z`.
+5. Commit and land the release commit on `main` first.
+6. Release **from `main`** by pushing the annotated tag, which triggers the workflow:
+   ```sh
+   git checkout main && git pull
+   git tag -a vX.Y.Z -m "…compatibility / notable changes…"
+   git push origin vX.Y.Z
+   ```
+   The `release.yml` workflow then runs `bundle exec rake release` (via
+   `rubygems/release-gem`) and publishes the `.gem` to RubyGems. Watch the Actions run;
+   it awaits propagation and fails loudly if the push is rejected.
 
 Landing on `main` before tagging avoids the dangling-tag trap: if the branch is
-squash-merged, a tag left on the pre-merge branch commit points at a commit that
-never reaches `main`.
+squash-merged, a tag left on the pre-merge branch commit points at a commit that never
+reaches `main`. Publishing is not available until the trusted publisher above is
+registered; until then, consumers can use the git source (see the README).
