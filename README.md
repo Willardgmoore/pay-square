@@ -1,10 +1,29 @@
-# Pay::Square
+<p align="center">
+  <a href="https://github.com/pay-rails/pay"><img src="https://raw.githubusercontent.com/pay-rails/pay/main/docs/images/logo.svg" height="50px" alt="Pay"></a>
+</p>
+
+# 💳 Pay::Square — Square for the Pay gem
 
 [![Gem Version](https://img.shields.io/gem/v/pay-square?logo=rubygems&logoColor=white)](https://rubygems.org/gems/pay-square)
 [![Ruby](https://img.shields.io/badge/ruby-%3E%3D%203.1-CC342D?logo=ruby&logoColor=white)](pay-square.gemspec)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](MIT-LICENSE)
 
-A [Square](https://squareup.com/) payment processor for the [Pay](https://github.com/pay-rails/pay) gem.
+A **[Square](https://squareup.com/)** payment processor for **[Pay — the payments engine for Ruby on Rails](https://github.com/pay-rails/pay)**.
+
+## 🏦 A Pay processor, shipped as its own gem
+
+[Pay](https://github.com/pay-rails/pay) already speaks Stripe, Braintree, Paddle, and Lemon Squeezy.
+`pay-square` extends it with **Square** — registered from the outside, as its own gem, with no fork of
+Pay. The whole point is to grow what Pay can do without bloating its core.
+
+This follows a convention Pay's maintainer, Chris Oliver, endorsed in
+[pay-rails/pay#1251](https://github.com/pay-rails/pay/pull/1251): *"you're welcome to extract this to a
+Rubygem that integrates with Pay"* — with Braintree and Paddle themselves slated to move to their own
+gems. It is the same outside-plugin pattern as
+[`pay-asaas`](https://github.com/PedroAugustoRamalhoDuarte/pay-asaas): a Rails engine that
+self-registers its processor, webhooks, and models into Pay.
+
+### What's Square-specific
 
 Unlike Stripe Connect (one platform key + a `stripe_account` header), Square issues a
 **distinct OAuth access token per merchant**. So this processor charges on a merchant's
@@ -15,13 +34,13 @@ Scope: card payments, card-on-file, refunds, and payment/refund/card/customer we
 Square OAuth, token refresh, payouts/reconciliation, catalog, and the checkout UI stay in
 your app.
 
-## Requirements
+## 📋 Requirements
 
 - Ruby >= 3.1.0
 - [Pay](https://github.com/pay-rails/pay) 11.x or 12.x (verified against 11.7.2 and 12.3.0)
 - [square.rb](https://github.com/square/square-ruby-sdk) ~> 44
 
-## Installation
+## 🧑‍💻 Installation
 
 Add Pay, this gem, and the Square SDK to your Gemfile. The default is patch releases only, with
 the compatible Pay and Square lines right there:
@@ -56,7 +75,7 @@ bin/rails pay_square:install:migrations
 bin/rails db:migrate
 ```
 
-## Configuration
+## ⚙️ Configuration
 
 ```ruby
 # config/initializers/pay.rb
@@ -76,7 +95,7 @@ Credentials (resolved via `ENV`, then env-scoped, then unscoped Rails credential
 * `SQUARE_SIGNING_SECRET` — webhook signature key
 * `SQUARE_WEBHOOK_NOTIFICATION_URL` — the exact URL registered with Square (its HMAC covers `notification_url + body`)
 
-## Usage
+## 💵 Usage
 
 ```ruby
 # Scope the customer to a merchant
@@ -101,30 +120,36 @@ Square has no server-side SCA step (3-D Secure is client-side in the Web Payment
 `Pay::Payment` / `has_incomplete_payment?` do not apply — a charge either succeeds or raises
 `Pay::Square::Error`.
 
-## Webhooks
+## 🔔 Webhooks
 
 Point your Square webhook subscription at `/pay/webhooks/square`. Requests are verified
 against `SQUARE_SIGNING_SECRET`. Handled events: `payment.*`, `refund.*`, `card.*`,
 `customer.*`. Handlers re-fetch authoritative state from the API rather than trusting the
 payload, so out-of-order/duplicate deliveries are safe.
 
-## Versioning and releases
+## 📦 Versioning and releases
 
 This gem follows [Semantic Versioning](https://semver.org). Maintainers: see
 [RELEASING.md](RELEASING.md) for how we version, tag, and cut releases — including
 when to use a pre-release (`0.1.0.rc1`) and the rule that a pushed tag is immutable
 (fix forward with a new version, never move a published tag).
 
-## Links
+## 🙏 Contributing
+
+Bug reports, feature ideas, and pull requests are welcome. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for how to open an issue, set up the gem for development, and
+run the test suite.
+
+## 🔗 Links
 
 [<img src="assets/rubygems/rubygems_logo_red.png" alt="RubyGems" height="28" align="left">](https://rubygems.org/gems/pay-square)
 
 - [pay-square on RubyGems](https://rubygems.org/gems/pay-square)
-- [Changelog](CHANGELOG.md) · [Releasing](RELEASING.md) · [Contributing](CONTRIBUTING.md)
+- [Changelog](CHANGELOG.md) · [Releasing](RELEASING.md)
 
-RubyGems logos in `assets/rubygems/` are trademarks of RubyGems and are used to link to the
-RubyGems ecosystem, not to imply endorsement.
+The RubyGems and Pay logos are trademarks of their respective projects, used here to link to those
+projects, not to imply endorsement.
 
-## License
+## 📝 License
 
 MIT.
