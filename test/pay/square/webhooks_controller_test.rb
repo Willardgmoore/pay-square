@@ -45,6 +45,23 @@ class Pay::Square::WebhooksControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
+  test "rejects every webhook when no signing secret is configured" do
+    raw = body
+    # Mirrors Pay 12.1.1's security fix. With a blank secret the HMAC key is public (empty),
+    # so an attacker can forge a "valid" signature. We sign with an empty key here: this
+    # request only gets rejected because the controller guards on key.blank? before comparing.
+    # Drop that guard and the forged signature would match and the event would be enqueued.
+    Pay::Square.stubs(:signing_secret).returns("")
+
+    assert_no_difference -> { Pay::Webhook.count } do
+      post "/pay/webhooks/square", params: raw, headers: {
+        "CONTENT_TYPE" => "application/json",
+        "x-square-hmacsha256-signature" => signature_for(raw, key: "")
+      }
+    end
+    assert_response :bad_request
+  end
+
   test "rejects a webhook whose body was tampered after signing" do
     signed = body
     signature = signature_for(signed)

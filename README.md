@@ -1,83 +1,74 @@
-# Pay::Square
+<p align="center">
+  <a href="https://github.com/pay-rails/pay"><img src="https://raw.githubusercontent.com/pay-rails/pay/main/docs/images/logo.svg" height="50px" alt="Pay"></a>
+</p>
 
-A [Square](https://squareup.com/) payment processor for the [Pay](https://github.com/pay-rails/pay) gem.
+# 💳 Pay::Square — Square for the Pay gem
 
-Unlike Stripe Connect (one platform key + a `stripe_account` header), Square issues a
-**distinct OAuth access token per merchant**. So this processor charges on a merchant's
-**own connected Square account** (you are not the merchant of record) and builds a
-`Square::Client` per operation from a token you supply via a resolver.
+[![Gem Version](https://img.shields.io/gem/v/pay-square?logo=rubygems&logoColor=white)](https://rubygems.org/gems/pay-square) [![Ruby](https://img.shields.io/badge/ruby-%3E%3D%203.1-CC342D?logo=ruby&logoColor=white)](pay-square.gemspec) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](MIT-LICENSE)
 
-Scope: card payments, card-on-file, refunds, and payment/refund/card/customer webhooks.
-Square OAuth, token refresh, payouts/reconciliation, catalog, and the checkout UI stay in
-your app.
+A **[Square](https://squareup.com/)** payment processor for **[Pay — the payments engine for Ruby on Rails](https://github.com/pay-rails/pay)**.
 
-## Installation
+## 🏦 Extending Pay — and why Square is its own gem
 
-```ruby
-# Gemfile
-gem "pay"
-gem "pay-square"
-```
+[Pay](https://github.com/pay-rails/pay) already speaks Stripe, Braintree, Paddle, and Lemon Squeezy.
+`pay-square` adds **Square** from the outside — its own gem, no fork of Pay — the same self-registering
+plugin pattern as [`pay-asaas`](https://github.com/PedroAugustoRamalhoDuarte/pay-asaas).
 
-Then copy and run the migration that adds `square_account` to Pay's tables:
+Pay's maintainer, Chris Oliver, both welcomed this and is taking the same direction for Pay's own
+processors:
 
-```sh
-bin/rails pay_square:install:migrations
-bin/rails db:migrate
-```
+> I'm planning to extract Braintree and Paddle from the main gem. It doesn't bloat anything having them
+> in the gem since they're lazy loaded, but easier to maintain. […] long-term we can add it to the pay
+> org if you would like to keep maintaining it.
+>
+> — [Chris Oliver, pay-rails/pay#1251](https://github.com/pay-rails/pay/pull/1251#issuecomment-5545503069)
 
-## Configuration
+### Not just a processor — a marketplace integration
 
-```ruby
-# config/initializers/pay.rb
+Braintree and Paddle are being split out for maintainability alone. Square is a different case: here it
+is used for **[marketplace payments](https://github.com/pay-rails/pay/tree/main/docs/marketplaces)** —
+Pay's term for charging on a connected merchant's **own account** and taking an **application fee** —
+not merely to charge your own customers.
 
-# Return a fresh per-merchant Square OAuth access token. force_refresh is true on the
-# retry after a 401 — bypass any cache and refresh.
-Pay::Square.access_token_provider = ->(pay_customer, force_refresh = false) do
-  account = ConnectedAccount.find_by!(owner: pay_customer.owner, provider: "square")
-  account.refresh! if force_refresh
-  account.access_token
-end
-```
+Square also issues a **distinct OAuth access token per merchant** (unlike Stripe Connect's single
+platform key plus a `stripe_account` header). So `pay-square` charges on a merchant's **own connected
+Square account** (the merchant, not you, is the merchant of record), building a `Square::Client` per
+operation from a token you supply via `Pay::Square.access_token_provider`, and isolates customers per
+merchant with a `square_account` column. That on-behalf-of, per-merchant model — not plain processing —
+is a core reason Square belongs in its own gem.
 
-Credentials (resolved via `ENV`, then env-scoped, then unscoped Rails credentials):
+Scope: card payments, card-on-file, refunds, and payment/refund/card/customer webhooks. Square OAuth,
+token refresh, payouts/reconciliation, catalog, and the checkout UI stay in your app.
 
-* `SQUARE_ENVIRONMENT` — `sandbox` or `production` (default `production`)
-* `SQUARE_SIGNING_SECRET` — webhook signature key
-* `SQUARE_WEBHOOK_NOTIFICATION_URL` — the exact URL registered with Square (its HMAC covers `notification_url + body`)
+## 📋 Requirements
 
-## Usage
+- Ruby >= 3.1.0
+- [Pay](https://github.com/pay-rails/pay) 11.x or 12.x (verified against 11.7.2 and 12.3.0)
+- [square.rb](https://github.com/square/square-ruby-sdk) ~> 44
 
-```ruby
-# Scope the customer to a merchant
-@user.set_payment_processor :square, square_account: "MLXXXXXXXXXXXX"
+## 📚 Docs
 
-# Card on file (source_id is a nonce from Square's Web Payments SDK)
-@user.payment_processor.add_payment_method("cnon:...", default: true)
+- [Installation](docs/installation.md) — Gemfile, pre-releases, and the migration
+- [Configuration](docs/configuration.md) — the per-merchant token resolver and credentials
+- [Usage](docs/usage.md) — charges, card-on-file, refunds, and per-merchant isolation
+- [Webhooks](docs/webhooks.md) — endpoint, signature verification, and handled events
+- [Versioning & releasing](RELEASING.md) — SemVer, tags, pre-releases, and publishing
+- [Contributing](CONTRIBUTING.md) — dev setup, running the tests, and opening issues
 
-# Charge (integer minor units), optional application fee + idempotency key
-charge = @user.payment_processor.charge(10_00, application_fee_amount: 1_00, idempotency_key: "order-42")
-charge.processor_id     # Square payment id
-charge.square_order_id
+## 🙏 Contributing
 
-# Refund (async; amount_refunded syncs from Square)
-charge.refund!(5_00)
-```
+Bug reports, feature ideas, and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) to
+get started.
 
-Because `square_account` is part of the customer lookup key, one user transacting with two
-different Square merchants gets two isolated `Pay::Customer` records.
+## 🔗 Links
 
-Square has no server-side SCA step (3-D Secure is client-side in the Web Payments SDK), so
-`Pay::Payment` / `has_incomplete_payment?` do not apply — a charge either succeeds or raises
-`Pay::Square::Error`.
+[<img src="assets/rubygems/rubygems_logo_red.png" alt="RubyGems" height="24" align="left">](https://rubygems.org/gems/pay-square)
 
-## Webhooks
+[pay-square on RubyGems](https://rubygems.org/gems/pay-square) · [Changelog](CHANGELOG.md)
 
-Point your Square webhook subscription at `/pay/webhooks/square`. Requests are verified
-against `SQUARE_SIGNING_SECRET`. Handled events: `payment.*`, `refund.*`, `card.*`,
-`customer.*`. Handlers re-fetch authoritative state from the API rather than trusting the
-payload, so out-of-order/duplicate deliveries are safe.
+The RubyGems and Pay logos are trademarks of their respective projects, used here to link to those
+projects, not to imply endorsement.
 
-## License
+## 📝 License
 
 MIT.

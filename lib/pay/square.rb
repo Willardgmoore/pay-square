@@ -1,6 +1,5 @@
 require "pay"
-require "square"
-
+# square.rb is app-provided (see gemspec); intentionally not required here.
 require "pay/square/version"
 require "pay/square/engine"
 require "pay/square/attributes"

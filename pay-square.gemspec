@@ -14,9 +14,11 @@ Gem::Specification.new do |spec|
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.1.0"
 
-  spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/main/CHANGELOG.md"
+  # Require owners to have multi-factor authentication for privileged actions. Trusted-publishing
+  # pushes (OpenID Connect) satisfy this, so CI releases keep working without a stored key.
+  spec.metadata["rubygems_mfa_required"] = "true"
 
   spec.files = Dir[
     "{app,config,db,lib}/**/*",
@@ -27,6 +29,9 @@ Gem::Specification.new do |spec|
   ]
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "pay", ">= 11.0"
-  spec.add_dependency "square.rb", "~> 44"
+  # Verified against Pay 11.7.2 and 12.3.0. Pay 13 removes methods deprecated in 12 and is
+  # not yet tested, so it is excluded until confirmed.
+  spec.add_dependency "pay", ">= 11.0", "< 13"
+
+  # square.rb is intentionally app-provided, not a dependency here (Pay's convention). See README.
 end

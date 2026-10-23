@@ -1,0 +1,61 @@
+# Lints and runs the test suite on every pull request and push to main, across the Ruby versions we
+# support and both Pay lines the gemspec allows. Also exposed via workflow_call so the release
+# workflow can run the exact same checks before publishing. The `all-tests` job is the single status
+# check to require in branch protection, so the matrix can change without reconfiguring it.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_call:
+
+jobs:
+  lint:
+    name: Standardrb
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - run: bundle exec standardrb
+
+  test:
+    name: Test (Ruby ${{ matrix.ruby }}, Pay ${{ matrix.pay }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.1", "3.2", "3.3", "3.4"]
+        pay: ["11", "12"]
+    env:
+      PAY_VERSION: ${{ matrix.pay }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: false
+      - run: bundle install --jobs 4
+      - run: bundle exec rake test
+
+  all-tests:
+    name: All tests passed
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Verify lint and the test matrix succeeded
+        run: |
+          if [ "${{ needs.lint.result }}" != "success" ] || [ "${{ needs.test.result }}" != "success" ]; then
+            echo "Lint or one or more test matrix jobs failed."
+            exit 1
+          fi
+          echo "Lint and all test matrix jobs passed."
