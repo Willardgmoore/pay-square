@@ -2,7 +2,10 @@
 /pkg/
 /tmp/
 *.gem
-Gemfile.lock
+
+# Per-Appraisal gemfile locks: regenerated per Ruby version in CI so each leg resolves a
+# compatible Rails (the root Gemfile.lock is committed for reproducible dev).
+gemfiles/*.gemfile.lock
 
 # Dummy app runtime artifacts
 test/dummy/db/*.sqlite3

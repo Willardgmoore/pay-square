@@ -7,6 +7,8 @@
 * Added `bug_tracker_uri` (GitHub Issues) and `allowed_push_host` (rubygems.org) gemspec metadata.
 * Renamed `RELEASING.md` to `UPGRADE.md`.
 * Added `CODE_OF_CONDUCT.md` (Contributor Covenant) and `bin/console` / `bin/setup` dev scaffolding.
+* Multi-version testing now uses Appraisal (`Appraisals` + `gemfiles/`) instead of the `PAY_VERSION`
+  env var; CI runs each Ruby against the `pay_11` and `pay_12` gemfiles. Committed `Gemfile.lock`.
 
 * Adopted Pay's `.github` conventions: a `Standardrb` lint job in CI, a reusable `ci.yml`
   (`workflow_call`) that the publish workflow runs before releasing, per-job timeouts, and
@@ -17,7 +19,6 @@
 * Added CI (`.github/workflows/ci.yml`): runs the test suite on every pull request and push to
   `main`, across Ruby 3.1–3.4 and Pay 11 + 12, behind a single `All tests passed` check.
 * The release workflow now runs the tests first and only publishes to RubyGems if they pass.
-* `Gemfile` honors `PAY_VERSION` so CI can pin the Pay major under test.
 
 * Added trusted-publishing release workflow (`.github/workflows/release.yml`): a `v*` tag push
   publishes to RubyGems via OpenID Connect, no stored API key. See `UPGRADE.md`.
