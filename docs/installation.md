@@ -24,7 +24,7 @@ gem "pay-square", "~> 0.1.0.pre" # newest 0.1.x, pre-releases included
 
 A plain `~> 0.1.0` never installs a pre-release; this opts in and still stays on the `0.1` line.
 `bundle update pay-square` then moves you to the newest version it allows. See
-[RELEASING.md](../RELEASING.md) for how versions are managed.
+[UPGRADE.md](../UPGRADE.md) for how versions are managed.
 
 ## Migration
 

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+* Declared the Rails libraries used directly (`railties`, `actionpack`, `activerecord`,
+  `activesupport`) in the gemspec; lowered `required_ruby_version` to `>= 3.0` to match Pay.
+* Added `bug_tracker_uri` (GitHub Issues) and `allowed_push_host` (rubygems.org) gemspec metadata.
+* Renamed `RELEASING.md` to `UPGRADE.md`.
+* Added `CODE_OF_CONDUCT.md` (Contributor Covenant) and `bin/console` / `bin/setup` dev scaffolding.
+
 * Adopted Pay's `.github` conventions: a `Standardrb` lint job in CI, a reusable `ci.yml`
   (`workflow_call`) that the publish workflow runs before releasing, per-job timeouts, and
   `actions/checkout@v6`. Renamed `release.yml` to `publish_gem.yml`.
@@ -14,7 +20,7 @@
 * `Gemfile` honors `PAY_VERSION` so CI can pin the Pay major under test.
 
 * Added trusted-publishing release workflow (`.github/workflows/release.yml`): a `v*` tag push
-  publishes to RubyGems via OpenID Connect, no stored API key. See `RELEASING.md`.
+  publishes to RubyGems via OpenID Connect, no stored API key. See `UPGRADE.md`.
 * Removed the generated `gem-push.yml` starter workflow in favor of `release.yml` (it published on
   every push to main, pinned Ruby 2.6, and also pushed to GitHub Packages).
 * README: added gem version / Ruby / license badges and a Links section; vendored the RubyGems
@@ -27,13 +33,13 @@
 ## 0.1.0.rc1 - 2026-10-21
 
 First pre-release, cut for verification in a real consuming app before `0.1.0` is tagged
-(see [RELEASING.md](RELEASING.md) for our pre-release policy).
+(see [UPGRADE.md](UPGRADE.md) for our pre-release policy).
 
 * Compatible with Pay 11.x and 12.x (verified against Pay 11.7.2 and 12.3.0).
 * The Square SDK (`square.rb`) is an app-provided dependency, matching Pay's convention for its
   built-in processors. Add `gem "square.rb", "~> 44"` to your app's Gemfile; `pay-square` no longer
   declares it and no longer `require`s it (the processor gates on `defined?(::Square)`).
-* Added `RELEASING.md` (versioning and tag conventions) and `CONTRIBUTING.md`; documented release
+* Added `UPGRADE.md` (versioning and tag conventions) and `CONTRIBUTING.md`; documented release
   and pre-release pinning in the README.
 * Fixed test suite boot order so the dummy app's environment loads before the gem.
 * Initial release: Square payment processor for Pay.

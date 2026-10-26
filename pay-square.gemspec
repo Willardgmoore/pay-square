@@ -12,10 +12,12 @@ Gem::Specification.new do |spec|
   spec.description = "Adds a Square payment processor to Pay. Charge on a merchant's own connected Square account (per-merchant OAuth), with card-on-file, refunds, application fees, and webhooks."
   spec.homepage = "https://github.com/Willardgmoore/pay-square"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.1.0"
+  spec.required_ruby_version = ">= 3.0"
 
   spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/main/CHANGELOG.md"
+  spec.metadata["bug_tracker_uri"] = "#{spec.homepage}/issues"
+  spec.metadata["allowed_push_host"] = "https://rubygems.org/"
   # Require owners to have multi-factor authentication for privileged actions. Trusted-publishing
   # pushes (OpenID Connect) satisfy this, so CI releases keep working without a stored key.
   spec.metadata["rubygems_mfa_required"] = "true"
@@ -32,6 +34,13 @@ Gem::Specification.new do |spec|
   # Verified against Pay 11.7.2 and 12.3.0. Pay 13 removes methods deprecated in 12 and is
   # not yet tested, so it is excluded until confirmed.
   spec.add_dependency "pay", ">= 11.0", "< 13"
+
+  # Rails libraries used directly (engine, webhook controller, models, support). Unversioned so pay
+  # drives the Rails version.
+  spec.add_dependency "railties"
+  spec.add_dependency "actionpack"
+  spec.add_dependency "activerecord"
+  spec.add_dependency "activesupport"
 
   # square.rb is intentionally app-provided, not a dependency here (Pay's convention). See README.
 end

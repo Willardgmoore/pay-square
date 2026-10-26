@@ -51,9 +51,9 @@ needed. The suite is expected to pass against every Pay version the gemspec allo
 ## Releasing
 
 Cutting releases and managing tags is a maintainer task with a few one-way-door rules (a pushed
-tag is immutable, pre-releases for anything unverified, etc.). See [RELEASING.md](RELEASING.md).
+tag is immutable, pre-releases for anything unverified, etc.). See [UPGRADE.md](UPGRADE.md).
 
 ## Code of conduct
 
-Be respectful and constructive. Assume good faith, keep feedback about the code, and help keep
-this a welcoming place to contribute.
+This project follows the [Contributor Covenant](CODE_OF_CONDUCT.md). Be respectful and
+constructive, assume good faith, and help keep this a welcoming place to contribute.
