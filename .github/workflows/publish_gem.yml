@@ -40,9 +40,10 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          bundler-cache: true
           ruby-version: "3.4"
-          # The runner's default bundler hits a zlib default-gem conflict on `rake release`; latest
-          # rubygems ships a bundler that handles it. Ruby pinned to 3.4 to match the tested matrix.
-          rubygems: latest
+          # Install to the system gem path like the CI test jobs do. bundler-cache: true installs to
+          # vendor/bundle, where Ruby pre-activates its default zlib and conflicts with the bundled
+          # one on `rake release`. Ruby pinned to 3.4 to match the tested matrix.
+          bundler-cache: false
+      - run: bundle install --jobs 4
       - uses: rubygems/release-gem@v1
