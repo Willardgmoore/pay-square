@@ -26,16 +26,16 @@ jobs:
       - run: bundle exec standardrb
 
   test:
-    name: Test (Ruby ${{ matrix.ruby }}, Pay ${{ matrix.pay }})
+    name: Test (Ruby ${{ matrix.ruby }}, ${{ matrix.gemfile }})
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
         ruby: ["3.1", "3.2", "3.3", "3.4"]
-        pay: ["11", "12"]
+        gemfile: ["pay_11", "pay_12"]
     env:
-      PAY_VERSION: ${{ matrix.pay }}
+      BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
     steps:
       - uses: actions/checkout@v6
       - name: Set up Ruby ${{ matrix.ruby }}
