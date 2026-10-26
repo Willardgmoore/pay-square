@@ -41,6 +41,8 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-          # Pinned: newest Ruby (4.0.x) hits a zlib default-gem/bundler conflict on `rake release`.
           ruby-version: "3.4"
+          # The runner's default bundler hits a zlib default-gem conflict on `rake release`; latest
+          # rubygems ships a bundler that handles it. Ruby pinned to 3.4 to match the tested matrix.
+          rubygems: latest
       - uses: rubygems/release-gem@v1
