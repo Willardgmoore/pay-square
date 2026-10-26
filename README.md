@@ -52,7 +52,7 @@ token refresh, payouts/reconciliation, catalog, and the checkout UI stay in your
 - [Configuration](docs/configuration.md) — the per-merchant token resolver and credentials
 - [Usage](docs/usage.md) — charges, card-on-file, refunds, and per-merchant isolation
 - [Webhooks](docs/webhooks.md) — endpoint, signature verification, and handled events
-- [Versioning & releasing](RELEASING.md) — SemVer, tags, pre-releases, and publishing
+- [Versioning & releasing](UPGRADE.md) — SemVer, tags, pre-releases, and publishing
 - [Contributing](CONTRIBUTING.md) — dev setup, running the tests, and opening issues
 
 ## 🙏 Contributing

@@ -1,4 +1,4 @@
-# Releasing pay-square
+# Upgrading and releasing pay-square
 
 How we version, tag, and release this gem. Read this before cutting a release or
 creating a tag. It exists because tags are the contract the downstream app (and

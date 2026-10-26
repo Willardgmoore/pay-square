@@ -37,5 +37,5 @@ reader might otherwise "fix"). Keep it short.
 
 ## Releasing
 
-Releases are tag-driven (`v*`) through trusted publishing — see `RELEASING.md`. Never publish on a
+Releases are tag-driven (`v*`) through trusted publishing — see `UPGRADE.md`. Never publish on a
 push to `main`, and never move or delete a published tag.
